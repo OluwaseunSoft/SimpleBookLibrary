@@ -9,6 +9,7 @@ namespace SimpleBookLibrary.Models
     {
         public int Id { get; set; }
         public int BookId { get; set; }
+        public DateTime CreatedDate { get; set; }
         public Book Book { get; set; }
     }
 }

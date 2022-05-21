@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleBookLibrary.Data;
 using SimpleBookLibrary.Models;
+using SimpleBookLibrary.ViewModel;
 
 namespace SimpleBookLibrary.Controllers
 {
@@ -15,17 +16,27 @@ namespace SimpleBookLibrary.Controllers
     public class BooksController : ControllerBase
     {
         private readonly SimpleBookLibraryContext _context;
+        CategoriesController categoryCtr;
 
         public BooksController(SimpleBookLibraryContext context)
         {
             _context = context;
+            categoryCtr = new CategoriesController(context);
         }
 
         // GET: api/Books
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
-            return await _context.Books.ToListAsync();
+            try
+            {
+                return await _context.Books.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+                throw;
+            }
         }
 
         // GET: api/Books/5
@@ -45,14 +56,23 @@ namespace SimpleBookLibrary.Controllers
         // PUT: api/Books/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutBook(int id, Book book)
+        public async Task<IActionResult> PutBook(int id, BookViewModel book)
         {
-            if (id != book.Id)
+            if (!BookExists(id))
             {
                 return BadRequest();
             }
 
-            _context.Entry(book).State = EntityState.Modified;
+            var data = new Book
+            {
+                Id = id,
+                Author = book.Author,
+                ISBN = book.ISBN,
+                Title = book.Title,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Entry(data).State = EntityState.Modified;
 
             try
             {
@@ -76,12 +96,26 @@ namespace SimpleBookLibrary.Controllers
         // POST: api/Books
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Book>> PostBook(Book book)
+        public async Task<ActionResult<Book>> PostBook(BookViewModel book)
         {
-            _context.Books.Add(book);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var data = new Book
+                {
+                    Author = book.Author,
+                    ISBN = book.ISBN,
+                    Title = book.Title,
+                    CreatedDate = DateTime.Now
+                };
+                _context.Books.Add(data);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetBook", new { id = book.Id }, book);
+                return CreatedAtAction("GetBook", new { id = data.Id }, data);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // DELETE: api/Books/5
@@ -103,6 +137,82 @@ namespace SimpleBookLibrary.Controllers
         private bool BookExists(int id)
         {
             return _context.Books.Any(e => e.Id == id);
+        }
+
+
+        [Route("BookToCategory")]
+        [HttpPost]
+        public async Task<IActionResult> BookToCategory(BookCategoryViewModel bookCategory)
+        {
+            try
+            {
+                if (!BookExists(bookCategory.BookId))
+                    return NotFound("Book Not Found");
+                if (!categoryCtr.CategoryExists(bookCategory.CategoryId))
+                    return NotFound("Category Not Found");
+
+                var data = new BookCategory
+                {
+                    BookId = bookCategory.BookId,
+                    CategoryId = bookCategory.CategoryId,
+                    CreatedDate = DateTime.Now
+                };
+
+                _context.BookCategories.Add(data);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("BookToCategory", new { id = data.Id }, data);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+
+        }
+
+
+        [Route("BookToFavourite")]
+        [HttpPost]
+        public async Task<IActionResult> BookToFavourite(FavouriteViewModel favourite)
+        {
+            try
+            {
+                if (!BookExists(favourite.BookId))
+                    return NotFound("Book Not Found");
+
+                var data = new Favourite
+                {
+                    BookId = favourite.BookId,
+                    CreatedDate = DateTime.Now
+                };
+
+                _context.Favourites.Add(data);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction("BookToFavourite", new { id = data.Id }, data);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<BookCategoryViewModel>>> GetBookCategories()
+        {
+            try
+            {
+                List<BookCategoryViewModel> bookCategories = new List<BookCategoryViewModel>();
+                var result = await _context.Books.ToListAsync();
+
+
+
+                return bookCategories;
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+                throw;
+            }
         }
     }
 }

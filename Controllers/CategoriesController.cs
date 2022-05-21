@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SimpleBookLibrary.Data;
 using SimpleBookLibrary.Models;
+using SimpleBookLibrary.ViewModel;
 
 namespace SimpleBookLibrary.Controllers
 {
@@ -45,14 +46,21 @@ namespace SimpleBookLibrary.Controllers
         // PUT: api/Categories/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCategory(int id, Category category)
+        public async Task<IActionResult> PutCategory(int id, CategoryViewModel category)
         {
-            if (id != category.Id)
+            if (!CategoryExists(id))
             {
                 return BadRequest();
             }
 
-            _context.Entry(category).State = EntityState.Modified;
+            var data = new Category
+            {
+                Id = id,
+                Name = category.Name,
+                CreatedDate = DateTime.Now
+            };
+
+            _context.Entry(data).State = EntityState.Modified;
 
             try
             {
@@ -76,13 +84,25 @@ namespace SimpleBookLibrary.Controllers
         // POST: api/Categories
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Category>> PostCategory(Category category)
+        public async Task<ActionResult<Category>> PostCategory(CategoryViewModel category)
         {
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync();
+            try
+            {
+                var data = new Category
+                {
+                    Name = category.Name,
+                    CreatedDate = DateTime.Now
+                };
+                _context.Categories.Add(data);
+                await _context.SaveChangesAsync();
 
-            //return CreatedAtAction("GetCategory", new { id = category.Id }, category);
-            return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, category);
+                //return CreatedAtAction("GetCategory", new { id = category.Id }, category);
+                return CreatedAtAction(nameof(GetCategory), new { id = data.Id }, data);
+            }
+            catch(Exception ex)
+            {
+                return NotFound();
+            }
         }
 
         // DELETE: api/Categories/5
@@ -101,7 +121,8 @@ namespace SimpleBookLibrary.Controllers
             return NoContent();
         }
 
-        private bool CategoryExists(int id)
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public bool CategoryExists(int id)
         {
             return _context.Categories.Any(e => e.Id == id);
         }

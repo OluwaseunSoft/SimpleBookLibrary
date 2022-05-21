@@ -33,6 +33,7 @@ namespace SimpleBookLibrary
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SimpleBookLibrary", Version = "v1" });
+                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First()); 
             });
             services.AddDbContext<SimpleBookLibraryContext>(opt =>
             opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
