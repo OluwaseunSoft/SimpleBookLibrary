@@ -17,6 +17,7 @@ namespace SimpleBookLibrary.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Favourite> Favourites { get; set; }
+        public DbSet<BookCategory> BookCategories { get; set; }
 
     }
 }

@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleBookLibrary.Data;
 
 namespace SimpleBookLibrary.Migrations
 {
     [DbContext(typeof(SimpleBookLibraryContext))]
-    partial class SimpleBookLibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20220521082318_modelredesign")]
+    partial class modelredesign
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,28 +39,6 @@ namespace SimpleBookLibrary.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("SimpleBookLibrary.Models.BookCategory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("BookId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("BookCategories");
                 });
 
             modelBuilder.Entity("SimpleBookLibrary.Models.Category", b =>
@@ -91,25 +71,6 @@ namespace SimpleBookLibrary.Migrations
                     b.HasIndex("BookId");
 
                     b.ToTable("Favourites");
-                });
-
-            modelBuilder.Entity("SimpleBookLibrary.Models.BookCategory", b =>
-                {
-                    b.HasOne("SimpleBookLibrary.Models.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SimpleBookLibrary.Models.Category", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("SimpleBookLibrary.Models.Favourite", b =>

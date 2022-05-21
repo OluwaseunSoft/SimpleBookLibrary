@@ -11,7 +11,6 @@ namespace SimpleBookLibrary.Models
         public string Title { get; set; }
         public string Author { get; set; }
         public int ISBN { get; set; }
-        public Category Category { get; set; }
 
     }
 }
