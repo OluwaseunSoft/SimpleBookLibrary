@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using SimpleBookLibrary.ViewModel;
 
 namespace SimpleBookLibrary.Controllers
 {
+    [EnableCors("AllowAllHeaders")]
     [Route("api/[controller]")]
     [ApiController]
     public class BooksController : ControllerBase
@@ -196,17 +198,60 @@ namespace SimpleBookLibrary.Controllers
             }
         }
 
+        [Route("GetBookCategories")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookCategoryViewModel>>> GetBookCategories()
         {
             try
             {
                 List<BookCategoryViewModel> bookCategories = new List<BookCategoryViewModel>();
-                var result = await _context.Books.ToListAsync();
+                var result = await _context.BookCategories.ToListAsync();
+
+                if (result != null || result.Count != 0)
+                {
+                    bookCategories = result.Select(x => new BookCategoryViewModel()
+                    {
+                        BookId = x.BookId,
+                        CategoryId = x.CategoryId
+                    }).ToList();
+
+                    return bookCategories;
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+                throw;
+            }
+        }
 
 
+        [Route("GetFavourites")]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<FavouriteViewModel>>> GetFavourites()
+        {
+            try
+            {
+                List<FavouriteViewModel> favourites = new List<FavouriteViewModel>();
+                var result = await _context.Favourites.ToListAsync();
 
-                return bookCategories;
+                if (result != null || result.Count != 0)
+                {
+                    favourites = result.Select(x => new FavouriteViewModel()
+                    {
+                        BookId = x.BookId
+                    }).ToList();
+
+                    return favourites;
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
             catch (Exception ex)
             {

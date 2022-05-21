@@ -33,10 +33,20 @@ namespace SimpleBookLibrary
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "SimpleBookLibrary", Version = "v1" });
-                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First()); 
+                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
             services.AddDbContext<SimpleBookLibraryContext>(opt =>
             opt.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllHeaders",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -52,13 +62,14 @@ namespace SimpleBookLibrary
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseCors("AllowAllHeaders");
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+
         }
     }
 }
