@@ -32,11 +32,19 @@ $(document).ready(function () {
 const uri = 'api/books';
 const categoriesUrl = 'api/Categories';
 let todos = [];
+let category = [];
 
 function getItems() {
     fetch(uri)
         .then(response => response.json())
         .then(data => _displayItems(data))
+        .catch(error => console.error('Unable to get items.', error));
+}
+
+function getCategories() {
+    fetch('api/Categories')
+        .then(response => response.json())
+        .then(data => _displayCategory(data))
         .catch(error => console.error('Unable to get items.', error));
 }
 
@@ -59,7 +67,7 @@ function addItem() {
     })
         .then(response => response.json())
         .then(() => {
-            //getItems();
+            getCategories();
             addNameTextbox.value = '';
         })
         .catch(error => console.error('Unable to add category.', error));
@@ -67,10 +75,19 @@ function addItem() {
 
 
 function deleteItem(id) {
+
     fetch(`${uri}/${id}`, {
         method: 'DELETE'
     })
         .then(() => getItems())
+        .catch(error => console.error('Unable to delete item.', error));
+}
+
+function deleteCategory(id) {
+    fetch(`${categoriesUrl}/${id}`, {
+        method: 'DELETE'
+    })
+        .then(() => getCategories())
         .catch(error => console.error('Unable to delete item.', error));
 }
 
@@ -83,6 +100,14 @@ function displayEditForm(id) {
     document.getElementById('editForm').style.display = 'block';
 }
 
+function displayEditCategory(id) {
+    const item = category.find(item => item.Id === id);
+
+    document.getElementById('edit-name').value = item.Name;
+    document.getElementById('edit-id').value = item.Id;
+    document.getElementById('editForm').style.display = 'block';
+}
+
 function updateItem() {
     const itemId = document.getElementById('edit-id').value;
     const item = {
@@ -90,8 +115,16 @@ function updateItem() {
         isComplete: document.getElementById('edit-isComplete').checked,
         name: document.getElementById('edit-name').value.trim()
     };
+}
 
-    fetch(`${uri}/${itemId}`, {
+function updateCategory() {
+    const itemId = document.getElementById('edit-id').value;
+    const item = {
+        id: parseInt(itemId, 10),
+        name: document.getElementById('edit-name').value.trim()
+    };
+
+    fetch(`${categoriesUrl}/${itemId}`, {
         method: 'PUT',
         headers: {
             'Accept': 'application/json',
@@ -99,7 +132,7 @@ function updateItem() {
         },
         body: JSON.stringify(item)
     })
-        .then(() => getItems())
+        .then(() => getCategories())
         .catch(error => console.error('Unable to update item.', error));
 
     closeInput();
@@ -112,7 +145,7 @@ function closeInput() {
 }
 
 function _displayCount(itemCount) {
-    const name = (itemCount === 1) ? 'to-do' : 'to-dos';
+    const name = (itemCount === 1) ? ' Item' : ' Items';
 
     document.getElementById('counter').innerText = `${itemCount} ${name}`;
 }
@@ -156,5 +189,43 @@ function _displayItems(data) {
     });
 
     todos = data;
+}
+
+function _displayCategory(data) {
+    const tBody = document.getElementById('categoryTable');
+    tBody.innerHTML = '';
+
+    _displayCount(data.length);
+
+    const button = document.createElement('button');
+
+    data.forEach(item => {
+
+        let editButton = button.cloneNode(false);
+        editButton.innerText = 'Edit';
+        editButton.setAttribute('onclick', `displayEditCategory(${item.Id})`);
+
+        let deleteButton = button.cloneNode(false);
+        deleteButton.innerText = 'Delete';
+        deleteButton.setAttribute('onclick', `deleteCategory(${item.Id})`);
+
+        let tr = tBody.insertRow();
+
+        let td1 = tr.insertCell(0);
+        let textNodeId = document.createTextNode(item.Id);
+        td1.appendChild(textNodeId);
+
+        let td2 = tr.insertCell(1);
+        let textNode = document.createTextNode(item.Name);
+        td2.appendChild(textNode);
+
+        let td3 = tr.insertCell(2);
+        td3.appendChild(editButton);
+
+        let td4 = tr.insertCell(3);
+        td4.appendChild(deleteButton);
+    });
+
+    category = data;
 }
 
