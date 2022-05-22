@@ -157,7 +157,7 @@
 
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Category</h1>
+                    <h1 class="h2">Book</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
                         <div class="btn-group me-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -172,17 +172,24 @@
                 <br />
                 <br />
 
-                <h2>Add Category</h2>
+                <h2>Add Book</h2>
                 <form action="javascript:void(0);" method="POST" onsubmit="addItem()">
-                    <input type="text" id="add-category" placeholder="New Category">
-                    <input type="submit" id="submit" value="Add">
+                    <div class="form-group">
+                        <input type="text" id="add-title" placeholder="Title">
+                        <br />
+                        <input type="text" id="add-author" placeholder="Author"><br />
+                        <input type="text" id="add-isbn" placeholder="ISBN"><br />
+                        <input type="submit" id="submit" value="Add">
+                    </div>
                 </form>
 
                 <div id="editForm">
                     <h3>Edit</h3>
                     <form action="javascript:void(0);" onsubmit="updateCategory()">
                         <input type="hidden" id="edit-id">
-                        <input type="text" id="edit-name">
+                        <input type="text" id="edit-title">
+                        <input type="text" id="edit-author">
+                        <input type="text" id="edit-isbn">
                         <input type="submit" value="Save">
                         <a onclick="closeInput()" aria-label="Close">&#10006;</a>
                     </form>
@@ -196,7 +203,8 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Title</th>
-                                <th scope="col">Title</th>
+                                <th scope="col">Authour</th>
+                                <th scope="col">ISBN</th>
                             </tr>
                         </thead>
                         <tbody id="bookTable">

@@ -2,26 +2,57 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+$(document).ready(function () {
 
-const uri = 'api/books';
-const categoriesUrl = 'api/Categories';
+    // jQuery methods go here...
+
+});
+
+//$(document).ready(function () {
+//    $("#submit").bind('click', function () {
+//        var idiom = $("#add-category").val();
+//        $.ajax({
+//            type: "POST",
+//            url: 'api/Categories',
+//            data: { name: idiom },
+//            async: true,
+//            crossDomain: true,
+//            beforeSend: function (request) {
+//                request.withCredentials = false;
+//            },
+//            success: function (data, status, xhr) {
+//                alert(xhr.getResponseHeader('Location'));
+//            }
+//        });
+
+//    });
+//});
+
+
+const uri = 'api/Books';
 let category = [];
+let book = [];
 
-function getCategories() {
-    fetch('api/Categories')
+
+function getBooks() {
+    fetch('api/Books')
         .then(response => response.json())
-        .then(data => _displayCategory(data))
-        .catch(error => console.error('Unable to get categories.', error));
+        .then(data => _displayBook(data))
+        .catch(error => console.error('Unable to get books.', error));
 }
 
 function addItem() {
-    const addNameTextbox = document.getElementById('add-category');
+    const addNameTextbox = document.getElementById('add-title');
+    const addAuthorTextbox = document.getElementById('add-author');
+    const addIsbnTextbox = document.getElementById('add-isbn');
 
     const item = {
-        name: addNameTextbox.value.trim()
+        title: addNameTextbox.value.trim(),
+        author: addAuthorTextbox.value.trim(),
+        isbn: addIsbnTextbox.value.trim()
     };
 
-    fetch(categoriesUrl, {
+    fetch(uri, {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -39,13 +70,17 @@ function addItem() {
         .catch(error => console.error('Unable to add category.', error));
 }
 
+
+
+
 function deleteCategory(id) {
     fetch(`${categoriesUrl}/${id}`, {
         method: 'DELETE'
     })
         .then(() => getCategories())
-        .catch(error => console.error('Unable to delete category.', error));
+        .catch(error => console.error('Unable to delete item.', error));
 }
+
 
 
 function displayEditCategory(id) {
@@ -55,6 +90,8 @@ function displayEditCategory(id) {
     document.getElementById('edit-id').value = item.Id;
     document.getElementById('editForm').style.display = 'block';
 }
+
+
 
 function updateCategory() {
     const itemId = document.getElementById('edit-id').value;
@@ -84,14 +121,13 @@ function closeInput() {
 }
 
 function _displayCount(itemCount) {
-    const name = (itemCount === 1) ? ' Category' : ' Categories';
+    const name = (itemCount === 1) ? ' Book' : ' Books';
 
     document.getElementById('counter').innerText = `${itemCount} ${name}`;
 }
 
-
-function _displayCategory(data) {
-    const tBody = document.getElementById('categoryTable');
+function _displayBook(data) {
+    const tBody = document.getElementById('bookTable');
     tBody.innerHTML = '';
 
     _displayCount(data.length);
@@ -115,16 +151,24 @@ function _displayCategory(data) {
         td1.appendChild(textNodeId);
 
         let td2 = tr.insertCell(1);
-        let textNode = document.createTextNode(item.Name);
+        let textNode = document.createTextNode(item.Title);
         td2.appendChild(textNode);
 
         let td3 = tr.insertCell(2);
-        td3.appendChild(editButton);
+        let textNodeAuth = document.createTextNode(item.Author);
+        td3.appendChild(textNodeAuth);
 
         let td4 = tr.insertCell(3);
-        td4.appendChild(deleteButton);
+        let textNodeIsbn = document.createTextNode(item.ISBN);
+        td4.appendChild(textNodeIsbn);
+
+        let td5 = tr.insertCell(4);
+        td5.appendChild(editButton);
+
+        let td6 = tr.insertCell(5);
+        td6.appendChild(deleteButton);
     });
 
-    category = data;
+    book = data;
 }
 
