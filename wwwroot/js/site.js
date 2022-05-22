@@ -72,7 +72,7 @@ function updateCategory() {
         body: JSON.stringify(item)
     })
         .then(() => getCategories())
-        .catch(error => console.error('Unable to update item.', error));
+        .catch(error => console.error('Unable to update category.', error));
 
     closeInput();
 

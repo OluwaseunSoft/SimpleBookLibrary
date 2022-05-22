@@ -64,43 +64,49 @@ function addItem() {
     })
         .then(response => response.json())
         .then(() => {
-            getCategories();
+            getBooks();
             addNameTextbox.value = '';
+            addAuthorTextbox.value = '';
+            addIsbnTextbox.value = '';
         })
-        .catch(error => console.error('Unable to add category.', error));
+        .catch(error => console.error('Unable to add book.', error));
 }
 
 
 
 
-function deleteCategory(id) {
-    fetch(`${categoriesUrl}/${id}`, {
+function deleteBook(id) {
+    fetch(`${uri}/${id}`, {
         method: 'DELETE'
     })
-        .then(() => getCategories())
+        .then(() => getBooks())
         .catch(error => console.error('Unable to delete item.', error));
 }
 
 
 
-function displayEditCategory(id) {
-    const item = category.find(item => item.Id === id);
+function displayEditBook(id) {
+    const item = book.find(item => item.Id === id);
 
-    document.getElementById('edit-name').value = item.Name;
+    document.getElementById('edit-title').value = item.Title;
+    document.getElementById('edit-author').value = item.Author;
+    document.getElementById('edit-isbn').value = item.ISBN;
     document.getElementById('edit-id').value = item.Id;
     document.getElementById('editForm').style.display = 'block';
 }
 
 
 
-function updateCategory() {
+function updateBook() {
     const itemId = document.getElementById('edit-id').value;
     const item = {
         id: parseInt(itemId, 10),
-        name: document.getElementById('edit-name').value.trim()
+        Title: document.getElementById('edit-title').value.trim(),
+        Author: document.getElementById('edit-author').value.trim(),
+        ISBN: document.getElementById('edit-isbn').value.trim(),
     };
 
-    fetch(`${categoriesUrl}/${itemId}`, {
+    fetch(`${uri}/${itemId}`, {
         method: 'PUT',
         headers: {
             'Accept': 'application/json',
@@ -108,8 +114,8 @@ function updateCategory() {
         },
         body: JSON.stringify(item)
     })
-        .then(() => getCategories())
-        .catch(error => console.error('Unable to update item.', error));
+        .then(() => getBooks())
+        .catch(error => console.error('Unable to update book.', error));
 
     closeInput();
 
@@ -138,11 +144,11 @@ function _displayBook(data) {
 
         let editButton = button.cloneNode(false);
         editButton.innerText = 'Edit';
-        editButton.setAttribute('onclick', `displayEditCategory(${item.Id})`);
+        editButton.setAttribute('onclick', `displayEditBook(${item.Id})`);
 
         let deleteButton = button.cloneNode(false);
         deleteButton.innerText = 'Delete';
-        deleteButton.setAttribute('onclick', `deleteCategory(${item.Id})`);
+        deleteButton.setAttribute('onclick', `deleteBook(${item.Id})`);
 
         let tr = tBody.insertRow();
 
