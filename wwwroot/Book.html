@@ -212,12 +212,22 @@
                     </table>
                 </div><br />
                 <h2>Add Book To Category</h2>
-                <form  action="javascript:void(0);" onsubmit="addToCategory()">
+                <form action="javascript:void(0);" onsubmit="addToCategory()">
                     <div class="form-group">
                         <label for="categoryDropDown">Book</label>
                         <select id="categoryDropDown" name="categoryDropDown"></select><br />
                         <label for="categoryDropDownII">Category</label>
                         <select id="categoryDropDownII" name="categoryDropDownII"></select><br />
+                        <input type="submit" value="Add">
+                    </div><br />
+                </form>
+                <br />
+                <br />
+                <h2>Add Book To Favourite</h2>
+                <form action="javascript:void(0);" onsubmit="addToFavourite()">
+                    <div class="form-group">
+                        <label for="bookDropDown">Book</label>
+                        <select id="bookDropDown" name="bookDropDown"></select><br />
                         <input type="submit" value="Add">
                     </div><br />
                 </form>

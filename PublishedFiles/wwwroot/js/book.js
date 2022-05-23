@@ -4,30 +4,35 @@
 // Write your JavaScript code.
 $(document).ready(function () {
 
-    // jQuery methods go here...
+    $.ajax({
+        type: "GET",
+        url: uri,
+        data: "{}",
+        success: function (data) {
+            var s = '<option value="-1"> Please select a Book </option>';
+            for (var i = 0; i < data.length; i++) {
+                s += '<option value="' + data[i].Id + '">' + data[i].Title + '</option>';
+            }
+            $("#categoryDropDown").html(s);
+            $("#bookDropDown").html(s); 
+        }
+    });
+
+
+    $.ajax({
+        type: "GET",
+        url: 'api/Categories',
+        data: "{}",
+        success: function (data) {
+            var s = '<option value="-1"> Please select a Category </option>';
+            for (var i = 0; i < data.length; i++) {
+                s += '<option value="' + data[i].Id + '">' + data[i].Name + '</option>';
+            }
+            $("#categoryDropDownII").html(s);
+        }
+    });
 
 });
-
-//$(document).ready(function () {
-//    $("#submit").bind('click', function () {
-//        var idiom = $("#add-category").val();
-//        $.ajax({
-//            type: "POST",
-//            url: 'api/Categories',
-//            data: { name: idiom },
-//            async: true,
-//            crossDomain: true,
-//            beforeSend: function (request) {
-//                request.withCredentials = false;
-//            },
-//            success: function (data, status, xhr) {
-//                alert(xhr.getResponseHeader('Location'));
-//            }
-//        });
-
-//    });
-//});
-
 
 const uri = 'api/Books';
 let category = [];
@@ -176,5 +181,63 @@ function _displayBook(data) {
     });
 
     book = data;
+}
+
+function _populateDropDown(data) {
+    var s = '<option value="-1"> Please select a Book </option>';
+    for (var i = 0; i < data.length; i++) {
+        s += '<option value="' + data[i].Id + '">' + data[i].Title + '</option>';
+    }
+    document.getElementById("categoryDropDown").html(s);
+}
+
+function addToCategory() {
+    const addBook = document.getElementById('categoryDropDown');
+    const addCategory = document.getElementById('categoryDropDownII');
+
+    const item = {
+        BookId: addBook.value.trim(),
+        CategoryId: addCategory.value.trim()
+    };
+
+    fetch('api/Books/BookToCategory', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(item),
+
+    })
+        .then(response => response.json())
+        .then(() => {
+            alert('Successful');
+        })
+        .catch(error => console.error('Unable to add book.', error));
+}
+
+function addToFavourite() {
+    const addBook = document.getElementById('bookDropDown');
+
+    const item = {
+        BookId: addBook.value.trim()
+    };
+
+    fetch('api/Books/BookToFavourite', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(item),
+
+    })
+        .then(response => response.json())
+        .then(() => {
+            alert('Successfuly added to favourite');
+        })
+        .catch(error => console.error('Unable to add book.', error));
 }
 

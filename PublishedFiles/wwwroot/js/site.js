@@ -3,6 +3,23 @@
 
 // Write your JavaScript code.
 
+$(document).ready(function () {
+
+    $.ajax({
+        type: "GET",
+        url: categoriesUrl,
+        data: "{}",
+        success: function (data) {
+            var s = '<option value="-1"> Please select a Category </option>';
+            for (var i = 0; i < data.length; i++) {
+                s += '<option value="' + data[i].Id + '">' + data[i].Name + '</option>';
+            }
+            $("#categoryDropDownII").html(s);
+        }
+    });
+
+});
+
 const uri = 'api/books';
 const categoriesUrl = 'api/Categories';
 let category = [];

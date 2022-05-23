@@ -14,6 +14,7 @@ $(document).ready(function () {
                 s += '<option value="' + data[i].Id + '">' + data[i].Title + '</option>';
             }
             $("#categoryDropDown").html(s);
+            $("#bookDropDown").html(s); 
         }
     });
 
@@ -191,13 +192,12 @@ function _populateDropDown(data) {
 }
 
 function addToCategory() {
-    const addNameTextbox = document.getElementById('add-title');
-    const addAuthorTextbox = document.getElementById('add-author');
-    const addIsbnTextbox = document.getElementById('add-isbn');
+    const addBook = document.getElementById('categoryDropDown');
+    const addCategory = document.getElementById('categoryDropDownII');
 
     const item = {
-        BookId: addNameTextbox.value.trim(),
-        CategoryId: addAuthorTextbox.value.trim()
+        BookId: addBook.value.trim(),
+        CategoryId: addCategory.value.trim()
     };
 
     fetch('api/Books/BookToCategory', {
@@ -212,10 +212,31 @@ function addToCategory() {
     })
         .then(response => response.json())
         .then(() => {
-            getBooks();
-            addNameTextbox.value = '';
-            addAuthorTextbox.value = '';
-            addIsbnTextbox.value = '';
+            alert('Successful');
+        })
+        .catch(error => console.error('Unable to add book.', error));
+}
+
+function addToFavourite() {
+    const addBook = document.getElementById('bookDropDown');
+
+    const item = {
+        BookId: addBook.value.trim()
+    };
+
+    fetch('api/Books/BookToFavourite', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        body: JSON.stringify(item),
+
+    })
+        .then(response => response.json())
+        .then(() => {
+            alert('Successfuly added to favourite');
         })
         .catch(error => console.error('Unable to add book.', error));
 }
